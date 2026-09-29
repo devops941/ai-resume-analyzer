@@ -1,0 +1,25 @@
+JANE DOE
+Email: jane.doe@example.com | Phone: +1 415-555-0142 | linkedin.com/in/janedoe | github.com/janedoe
+
+SUMMARY
+Backend engineer with 6 years of experience building scalable APIs and data platforms.
+
+EXPERIENCE
+Senior Backend Engineer, Acme Cloud
+- Led migration of a monolith to microservices, reducing p95 latency by 45%.
+- Built a FastAPI service handling 2M requests per day with PostgreSQL and Redis.
+- Designed CI/CD pipelines with Docker and GitHub Actions, cutting deploy time by 60%.
+- Mentored 4 junior engineers and owned the on-call rotation.
+
+Backend Engineer, Nimbus Data
+- Developed REST APIs in Python and Django serving 300k users.
+- Optimized SQL queries and reduced database costs by 30%.
+
+EDUCATION
+B.S. Computer Science, State University
+
+SKILLS
+Python, FastAPI, Django, PostgreSQL, MongoDB, Redis, Docker, Kubernetes, AWS, REST, Git, CI/CD
+
+PROJECTS
+- Open-source rate limiter library with 500 GitHub stars.

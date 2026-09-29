@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-py"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("user")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  resumes      Resume[]
+  analyses     Analysis[]
+  jobDescs     JobDescription[]
+
+  @@map("users")
+}
+
+model Resume {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  fileName   String
+  fileType   String
+  fileSize   Int
+  rawText    String
+  parsed     Json?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses   Analysis[]
+
+  @@index([userId])
+  @@map("resumes")
+}
+
+model JobDescription {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  title        String   @default("Untitled Role")
+  company      String?
+  description  String
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses     Analysis[]
+
+  @@index([userId])
+  @@map("job_descriptions")
+}
+
+model Analysis {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
+  resumeId       String   @db.ObjectId
+  jobDescId      String?  @db.ObjectId
+  atsScore       Int      @default(0)
+  atsGrade       String   @default("Needs Work")
+  atsChecks      Json?
+  aiReport       Json?
+  keywordGaps    Json?
+  suggestions    Json?
+  missingSkills  String[] @default([])
+  createdAt      DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume         Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobDescription JobDescription? @relation(fields: [jobDescId], references: [id])
+
+  @@index([userId])
+  @@index([resumeId])
+  @@map("analyses")
+}
+
+model AdminSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_settings")
+}
