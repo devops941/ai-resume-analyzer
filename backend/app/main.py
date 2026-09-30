@@ -40,6 +40,15 @@ app.include_router(analyses.router)
 app.include_router(admin.router)
 
 
+@app.get("/", tags=["root"])
+async def root():
+    return {
+        "status": "ok",
+        "message": "AI Resume Analyzer & ATS Checker API is running",
+        "docs": "/docs",
+    }
+
+
 @app.get("/api/health", tags=["health"])
 async def health():
     return {

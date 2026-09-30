@@ -5,7 +5,14 @@ from passlib.context import CryptContext
 
 from app.config import settings
 
+import bcrypt
 import passlib.handlers.bcrypt
+
+# Fix passlib 1.7.4 bug with bcrypt >= 4.0 missing __about__ attribute
+if not hasattr(bcrypt, "__about__"):
+    class _About:
+        __version__ = getattr(bcrypt, "__version__", "4.0.0")
+    bcrypt.__about__ = _About()
 
 # Fix passlib 1.7.4 bug with bcrypt >= 4.0 where passlib tests wrapping bug using >72-byte passwords
 _orig_calc_checksum = passlib.handlers.bcrypt._BcryptBackend._calc_checksum
