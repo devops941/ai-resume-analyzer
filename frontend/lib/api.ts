@@ -74,7 +74,8 @@ export const api = {
   deleteAnalysis: (id: string) => request<void>(`/api/analyses/${id}`, { method: "DELETE" }),
 
   adminStats: () => request<AdminStats>("/api/admin/stats"),
-  adminUsers: () => request<User[]>("/api/admin/users"),
+  adminUsers: () => request<AdminUserRow[]>("/api/admin/users"),
+  adminUser: (id: string) => request<AdminUserDetail>(`/api/admin/users/${id}`),
   reportUrl: () => `${API_URL}/api/admin/report`,
 };
 
@@ -183,4 +184,17 @@ export interface AdminStats {
     atsGrade: string;
     createdAt?: string;
   }[];
+}
+
+export interface AdminUserRow extends User {
+  resumeCount: number;
+  analysisCount: number;
+  avgAtsScore: number | null;
+  lastActiveAt?: string | null;
+}
+
+export interface AdminUserDetail {
+  user: User;
+  resumes: Resume[];
+  analyses: AnalysisHistoryItem[];
 }
