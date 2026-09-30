@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Activity, Download, FileText, Users, BarChart3 } from "lucide-react";
 
-import { api, ApiError, type AdminStats, type User } from "@/lib/api";
+import { api, ApiError, type AdminStats, type AdminUserRow } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { formatDate, scoreTone } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 export default function AdminPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -153,20 +154,62 @@ export default function AdminPage() {
           <CardTitle>Users ({users.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {users.map((u) => (
-              <div
-                key={u.id}
-                className="flex items-center justify-between rounded-md border border-[hsl(var(--border))] p-3"
-              >
-                <div>
-                  <p className="text-sm font-medium">{u.name}</p>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">{u.email}</p>
-                </div>
-                <Badge variant={u.role === "admin" ? "success" : "muted"}>{u.role}</Badge>
-              </div>
-            ))}
-          </div>
+          {users.length === 0 ? (
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">No users yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[hsl(var(--border))] text-left text-xs text-[hsl(var(--muted-foreground))]">
+                    <th className="px-3 py-2 font-medium">User</th>
+                    <th className="px-3 py-2 font-medium">Role</th>
+                    <th className="px-3 py-2 text-right font-medium">Resumes</th>
+                    <th className="px-3 py-2 text-right font-medium">Analyses</th>
+                    <th className="px-3 py-2 text-right font-medium">Avg score</th>
+                    <th className="px-3 py-2 font-medium">Last active</th>
+                    <th className="px-3 py-2 text-right font-medium"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => {
+                    const tone = u.avgAtsScore != null ? scoreTone(u.avgAtsScore) : null;
+                    return (
+                      <tr
+                        key={u.id}
+                        className="border-b border-[hsl(var(--border))] last:border-0 hover:bg-[hsl(var(--muted))]"
+                      >
+                        <td className="px-3 py-3">
+                          <p className="font-medium">{u.name}</p>
+                          <p className="text-xs text-[hsl(var(--muted-foreground))]">{u.email}</p>
+                        </td>
+                        <td className="px-3 py-3">
+                          <Badge variant={u.role === "admin" ? "success" : "muted"}>
+                            {u.role}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-3 text-right">{u.resumeCount}</td>
+                        <td className="px-3 py-3 text-right">{u.analysisCount}</td>
+                        <td className={`px-3 py-3 text-right ${tone?.text || ""}`}>
+                          {u.avgAtsScore != null ? u.avgAtsScore : "-"}
+                        </td>
+                        <td className="px-3 py-3 text-xs text-[hsl(var(--muted-foreground))]">
+                          {formatDate(u.lastActiveAt)}
+                        </td>
+                        <td className="px-3 py-3 text-right">
+                          <Link
+                            href={`/dashboard/admin/users/${u.id}`}
+                            className="text-sm text-indigo-400 hover:underline"
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

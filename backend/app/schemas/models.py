@@ -108,3 +108,16 @@ class AdminStats(BaseModel):
     averageAtsScore: float
     commonMissingKeywords: list[dict[str, Any]]
     recentAnalyses: list[dict[str, Any]]
+
+
+class AdminUserRow(UserOut):
+    resumeCount: int = 0
+    analysisCount: int = 0
+    avgAtsScore: Optional[float] = None
+    lastActiveAt: Optional[datetime] = None
+
+
+class AdminUserDetail(BaseModel):
+    user: UserOut
+    resumes: list[ResumeOut] = []
+    analyses: list[AnalysisHistoryItem] = []
