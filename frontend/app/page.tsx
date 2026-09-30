@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   Gauge,
@@ -8,6 +12,12 @@ import {
   UploadCloud,
   Sparkles,
 } from "lucide-react";
+
+import { useAuth } from "@/lib/auth-context";
+import { setPendingCheck } from "@/lib/pending-check";
+import { Button } from "@/components/ui/button";
+import { Dropzone } from "@/components/ui/dropzone";
+import { Label, Textarea } from "@/components/ui/input";
 
 const features = [
   {
@@ -43,6 +53,22 @@ const features = [
 ];
 
 export default function HomePage() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [file, setFile] = useState<File | null>(null);
+  const [jobDescription, setJobDescription] = useState("");
+  const [error, setError] = useState("");
+
+  const onCheck = () => {
+    if (!file) {
+      setError("Please choose a resume file (PDF, DOCX or TXT) first.");
+      return;
+    }
+    setError("");
+    setPendingCheck({ file, jobDescription: jobDescription.trim() });
+    router.push(user ? "/dashboard/analyze" : "/login?next=/dashboard/analyze");
+  };
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-16">
       <section className="flex flex-col items-center text-center">
@@ -59,10 +85,10 @@ export default function HomePage() {
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
-            href="/register"
+            href="#check"
             className="inline-flex h-11 items-center gap-2 rounded-md bg-[hsl(var(--primary))] px-6 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            <UploadCloud className="h-4 w-4" /> Get started free
+            <UploadCloud className="h-4 w-4" /> Check my resume
           </Link>
           <Link
             href="/login"
@@ -70,6 +96,63 @@ export default function HomePage() {
           >
             I already have an account
           </Link>
+        </div>
+      </section>
+
+      <section id="check" className="mt-16">
+        <div className="mx-auto max-w-2xl rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 card-glow sm:p-8">
+          <div className="mb-5 text-center">
+            <h2 className="text-xl font-semibold">Check your resume right here</h2>
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              Upload a resume and run an instant ATS check. Sign in is required to run the
+              analysis and save your report.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <Dropzone file={file} onFile={setFile} />
+
+            <div className="space-y-2">
+              <Label htmlFor="home-jd">Job description (optional)</Label>
+              <Textarea
+                id="home-jd"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste a job posting to unlock keyword gap matching…"
+              />
+            </div>
+
+            {error && (
+              <p className="rounded-md bg-rose-500/10 p-3 text-sm text-rose-300">{error}</p>
+            )}
+
+            <Button size="lg" className="w-full" onClick={onCheck}>
+              <Sparkles className="h-4 w-4" /> Check ATS score
+            </Button>
+
+            <p className="text-center text-xs text-[hsl(var(--muted-foreground))]">
+              {user ? (
+                <>
+                  Signed in as {user.email}.{" "}
+                  <Link href="/dashboard" className="text-indigo-400 hover:underline">
+                    Go to dashboard
+                  </Link>
+                </>
+              ) : (
+                <>
+                  You will be asked to{" "}
+                  <Link href="/login" className="text-indigo-400 hover:underline">
+                    sign in
+                  </Link>{" "}
+                  or{" "}
+                  <Link href="/register" className="text-indigo-400 hover:underline">
+                    create an account
+                  </Link>{" "}
+                  to run the check.
+                </>
+              )}
+            </p>
+          </div>
         </div>
       </section>
 
