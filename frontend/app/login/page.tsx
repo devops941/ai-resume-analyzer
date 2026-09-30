@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 
-export default function LoginPage() {
+function safeNext(value: string | null): string | null {
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
+}
+
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = use(searchParams);
+  const redirectTo = safeNext(next ?? null);
   const { login } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -23,7 +33,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const user = await login(email, password);
-      router.push(user.role === "admin" ? "/dashboard/admin" : "/dashboard");
+      router.push(redirectTo ?? (user.role === "admin" ? "/dashboard/admin" : "/dashboard"));
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {

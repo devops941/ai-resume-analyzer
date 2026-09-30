@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 
-export default function RegisterPage() {
+function safeNext(value: string | null): string | null {
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
+}
+
+export default function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = use(searchParams);
+  const redirectTo = safeNext(next ?? null);
   const { register } = useAuth();
   const router = useRouter();
   const [name, setName] = useState("");
@@ -28,7 +38,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(name, email, password);
-      router.push("/dashboard");
+      router.push(redirectTo ?? "/dashboard");
     } catch (err: any) {
       setError(err.message || "Registration failed");
     } finally {

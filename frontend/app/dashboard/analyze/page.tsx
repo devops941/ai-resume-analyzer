@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
 
 import { api, ApiError, type Resume } from "@/lib/api";
+import { takePendingCheck } from "@/lib/pending-check";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dropzone } from "@/components/ui/dropzone";
@@ -23,6 +24,7 @@ export default function AnalyzePage() {
   const [company, setCompany] = useState("");
   const [stage, setStage] = useState<Stage>("idle");
   const [error, setError] = useState("");
+  const autoRunStarted = useRef(false);
 
   useEffect(() => {
     api
@@ -36,6 +38,17 @@ export default function AnalyzePage() {
       })
       .catch(() => {});
   }, []);
+
+  const runAnalysis = async (resumeId: string) => {
+    setStage("analyzing");
+    const analysis = await api.analyze({
+      resumeId,
+      jobDescription: jobDescription.trim() || undefined,
+      jobTitle: jobTitle.trim() || undefined,
+      company: company.trim() || undefined,
+    });
+    router.push(`/dashboard/analyze/${analysis.id}`);
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,14 +72,7 @@ export default function AnalyzePage() {
         setResumes((prev) => [uploaded, ...prev]);
       }
 
-      setStage("analyzing");
-      const analysis = await api.analyze({
-        resumeId,
-        jobDescription: jobDescription.trim() || undefined,
-        jobTitle: jobTitle.trim() || undefined,
-        company: company.trim() || undefined,
-      });
-      router.push(`/dashboard/analyze/${analysis.id}`);
+      await runAnalysis(resumeId);
     } catch (err: any) {
       const message =
         err instanceof ApiError
@@ -76,6 +82,39 @@ export default function AnalyzePage() {
       setStage("idle");
     }
   };
+
+  // A check started on the home page is stashed before login; resume it here.
+  useEffect(() => {
+    if (autoRunStarted.current) return;
+    const pending = takePendingCheck();
+    if (!pending) return;
+    autoRunStarted.current = true;
+    setFile(pending.file);
+    setUseUpload(true);
+    setJobDescription(pending.jobDescription);
+
+    (async () => {
+      try {
+        setStage("uploading");
+        const uploaded = await api.uploadResume(pending.file);
+        setResumes((prev) => [uploaded, ...prev]);
+        setStage("analyzing");
+        const analysis = await api.analyze({
+          resumeId: uploaded.id,
+          jobDescription: pending.jobDescription || undefined,
+        });
+        router.push(`/dashboard/analyze/${analysis.id}`);
+      } catch (err: any) {
+        const message =
+          err instanceof ApiError
+            ? err.message
+            : err?.message || "Something went wrong while analyzing your resume.";
+        setError(message);
+        setStage("idle");
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const busy = stage !== "idle";
   const buttonLabel =
