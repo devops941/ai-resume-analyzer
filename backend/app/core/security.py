@@ -5,6 +5,18 @@ from passlib.context import CryptContext
 
 from app.config import settings
 
+import passlib.handlers.bcrypt
+
+# Fix passlib 1.7.4 bug with bcrypt >= 4.0 where passlib tests wrapping bug using >72-byte passwords
+_orig_calc_checksum = passlib.handlers.bcrypt._BcryptBackend._calc_checksum
+
+def _fixed_calc_checksum(self, secret):
+    if isinstance(secret, bytes) and len(secret) > 72:
+        secret = secret[:72]
+    return _orig_calc_checksum(self, secret)
+
+passlib.handlers.bcrypt._BcryptBackend._calc_checksum = _fixed_calc_checksum
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
