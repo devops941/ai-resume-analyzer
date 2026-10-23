@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import connect_db, disconnect_db
-from app.routers import admin, analyses, auth, resumes
+from app.routers import admin, analyses, auth, generator, resumes
 
 
 @asynccontextmanager
@@ -31,6 +31,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Resume-Pages"],
 )
 
 app.include_router(auth.router)
@@ -38,6 +39,7 @@ app.include_router(resumes.router)
 app.include_router(resumes.job_router)
 app.include_router(analyses.router)
 app.include_router(admin.router)
+app.include_router(generator.router)
 
 
 @app.get("/", tags=["root"])

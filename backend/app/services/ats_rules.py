@@ -28,7 +28,16 @@ def _has_metric(text: str) -> bool:
 def run_ats_checks(raw_text: str, parsed: dict, file_name: str, file_size: int) -> dict:
     sections = [s.lower() for s in parsed.get("sections", [])]
     lower = raw_text.lower()
-    bullet_count = len(re.findall(r"^\s*[-•*]", raw_text, re.M))
+    # Count bullet lines from already-parsed sections (reliable even when pdfplumber
+    # strips glyph-based bullets from raw text).
+    parsed_bullet_count = (
+        len(parsed.get("experience", []))
+        + len(parsed.get("projects", []))
+        + len(parsed.get("education", []))
+    )
+    # Also scan raw text for any surviving bullet chars as a secondary signal.
+    raw_bullet_count = len(re.findall(r"^\s*[-•*▪▸►◆■●–]", raw_text, re.M))
+    bullet_count = max(parsed_bullet_count, raw_bullet_count)
     checks: list[dict] = []
 
     def add(cid, label, passed, weight, detail):

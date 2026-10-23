@@ -121,3 +121,57 @@ class AdminUserDetail(BaseModel):
     user: UserOut
     resumes: list[ResumeOut] = []
     analyses: list[AnalysisHistoryItem] = []
+
+
+# ── Resume Generator ───────────────────────────────────────────────────────────
+
+class WorkExperience(BaseModel):
+    company: str
+    role: str
+    startDate: str
+    endDate: str = "Present"
+    location: Optional[str] = None
+    bullets: list[str] = []
+
+
+class Education(BaseModel):
+    institution: str
+    degree: str
+    field: str
+    startYear: str
+    endYear: str
+    gpa: Optional[str] = None
+
+
+class Project(BaseModel):
+    name: str
+    techStack: str
+    description: str
+
+
+class Certification(BaseModel):
+    name: str
+    issuer: Optional[str] = None
+    year: Optional[str] = None
+
+
+class GenerateResumeRequest(BaseModel):
+    personalInfo: dict[str, Any]
+    summary: Optional[str] = None
+    experience: list[WorkExperience] = []
+    education: list[Education] = []
+    skills: dict[str, list[str]] = {}   # {category: [skill, ...]}
+    projects: list[Project] = []
+    certifications: list[Certification] = []
+    targetRole: Optional[str] = None
+    promptText: Optional[str] = None    # free-form prompt for AI-only generation
+
+
+class DownloadResumeRequest(BaseModel):
+    resumeData: dict[str, Any]
+    template: str = "modern"
+
+
+class GeneratedResumeResponse(BaseModel):
+    resumeData: dict[str, Any]
+    rawText: str

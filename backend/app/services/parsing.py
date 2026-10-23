@@ -42,7 +42,13 @@ SKILL_VOCAB = [
 ]
 
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
-PHONE_RE = re.compile(r"(?:(?:\+?\d{1,3}[\s-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4})")
+PHONE_RE = re.compile(
+    r"(?:"
+    r"\+?91[\s\-]?\d{5}[\s\-]?\d{5}"          # Indian: +91 81368 87579
+    r"|\+?91[\s\-]?\d{10}"                      # Indian: +91 8136887579
+    r"|(?:\+?\d{1,3}[\s-]?)?(?:\(?\d{3}\)?[\s.\-]?)\d{3}[\s.\-]?\d{4}"  # intl/US
+    r")"
+)
 LINKEDIN_RE = re.compile(r"(?:https?://)?(?:www\.)?linkedin\.com/[\w/\-]+", re.I)
 GITHUB_RE = re.compile(r"(?:https?://)?(?:www\.)?github\.com/[\w/\-]+", re.I)
 URL_RE = re.compile(r"https?://[\w./\-?=&%#]+", re.I)

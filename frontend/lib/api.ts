@@ -77,6 +77,52 @@ export const api = {
   adminUsers: () => request<AdminUserRow[]>("/api/admin/users"),
   adminUser: (id: string) => request<AdminUserDetail>(`/api/admin/users/${id}`),
   reportUrl: () => `${API_URL}/api/admin/report`,
+
+  generateResume: (body: GenerateResumeRequest) =>
+    request<GeneratedResumeResponse>("/api/generator/generate", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  downloadResumePdf: async (resumeData: Record<string, unknown>, template = "modern"): Promise<number> => {
+    const token = getToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const res = await fetch(`${API_URL}/api/generator/download/pdf-from-data`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ resumeData, template }),
+    });
+    if (!res.ok) throw new ApiError("PDF download failed", res.status);
+    const pageCount = parseInt(res.headers.get("X-Resume-Pages") || "1", 10);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(resumeData.name as string || "resume").replace(/\s+/g, "_")}_resume.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    return pageCount;
+  },
+
+  downloadResumeDocx: async (resumeData: Record<string, unknown>, template = "modern"): Promise<void> => {
+    const token = getToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const res = await fetch(`${API_URL}/api/generator/download/docx-from-data`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ resumeData, template }),
+    });
+    if (!res.ok) throw new ApiError("DOCX download failed", res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(resumeData.name as string || "resume").replace(/\s+/g, "_")}_resume.docx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
 };
 
 export interface User {
@@ -197,4 +243,60 @@ export interface AdminUserDetail {
   user: User;
   resumes: Resume[];
   analyses: AnalysisHistoryItem[];
+}
+
+// ── Resume Generator ──────────────────────────────────────────────────────────
+
+export interface WorkExperienceInput {
+  company: string;
+  role: string;
+  startDate: string;
+  endDate: string;
+  location?: string;
+  bullets: string[];
+}
+
+export interface EducationInput {
+  institution: string;
+  degree: string;
+  field: string;
+  startYear: string;
+  endYear: string;
+  gpa?: string;
+}
+
+export interface ProjectInput {
+  name: string;
+  techStack: string;
+  description: string;
+}
+
+export interface CertificationInput {
+  name: string;
+  issuer?: string;
+  year?: string;
+}
+
+export interface GenerateResumeRequest {
+  personalInfo: {
+    name: string;
+    email: string;
+    phone: string;
+    location: string;
+    linkedin?: string;
+    github?: string;
+  };
+  summary?: string;
+  experience: WorkExperienceInput[];
+  education: EducationInput[];
+  skills: Record<string, string[]>;   // { category: [skill, ...] }
+  projects: ProjectInput[];
+  certifications: CertificationInput[];
+  targetRole?: string;
+  promptText?: string;                // free-form prompt for AI-only generation
+}
+
+export interface GeneratedResumeResponse {
+  resumeData: Record<string, unknown>;
+  rawText: string;
 }
