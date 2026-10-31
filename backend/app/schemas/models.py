@@ -165,11 +165,13 @@ class GenerateResumeRequest(BaseModel):
     certifications: list[Certification] = []
     targetRole: Optional[str] = None
     promptText: Optional[str] = None    # free-form prompt for AI-only generation
+    targetPages: int = 1                # 1 to 5 pages (default 1)
 
 
 class DownloadResumeRequest(BaseModel):
     resumeData: dict[str, Any]
     template: str = "modern"
+    targetPages: Optional[int] = 1
 
 
 class GeneratedResumeResponse(BaseModel):

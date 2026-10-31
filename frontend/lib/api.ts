@@ -84,14 +84,14 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
-  downloadResumePdf: async (resumeData: Record<string, unknown>, template = "modern"): Promise<number> => {
+  downloadResumePdf: async (resumeData: Record<string, unknown>, template = "modern", targetPages = 1): Promise<number> => {
     const token = getToken();
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) headers["Authorization"] = `Bearer ${token}`;
     const res = await fetch(`${API_URL}/api/generator/download/pdf-from-data`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ resumeData, template }),
+      body: JSON.stringify({ resumeData, template, targetPages }),
     });
     if (!res.ok) throw new ApiError("PDF download failed", res.status);
     const pageCount = parseInt(res.headers.get("X-Resume-Pages") || "1", 10);
@@ -105,14 +105,14 @@ export const api = {
     return pageCount;
   },
 
-  downloadResumeDocx: async (resumeData: Record<string, unknown>, template = "modern"): Promise<void> => {
+  downloadResumeDocx: async (resumeData: Record<string, unknown>, template = "modern", targetPages = 1): Promise<void> => {
     const token = getToken();
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) headers["Authorization"] = `Bearer ${token}`;
     const res = await fetch(`${API_URL}/api/generator/download/docx-from-data`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ resumeData, template }),
+      body: JSON.stringify({ resumeData, template, targetPages }),
     });
     if (!res.ok) throw new ApiError("DOCX download failed", res.status);
     const blob = await res.blob();
@@ -294,6 +294,7 @@ export interface GenerateResumeRequest {
   certifications: CertificationInput[];
   targetRole?: string;
   promptText?: string;                // free-form prompt for AI-only generation
+  targetPages?: number;               // 1 to 5 pages
 }
 
 export interface GeneratedResumeResponse {

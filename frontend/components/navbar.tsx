@@ -2,15 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileSearch, LayoutDashboard, History, ShieldCheck, LogOut, FilePen, User } from "lucide-react";
+import { LayoutDashboard, History, ShieldCheck, LogOut, FilePen, User } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/analyze", label: "Analyze", icon: FileSearch },
-  { href: "/dashboard/generate", label: "Generate", icon: FilePen },
-  { href: "/dashboard/history", label: "History", icon: History },
+  { href: "/dashboard/generate", label: "Resume Generator", icon: FilePen },
+  { href: "/dashboard/history", label: "My Resumes", icon: History },
 ];
 
 export function Navbar() {
@@ -26,7 +25,7 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[hsl(var(--primary))] text-xs font-bold text-white">AI</span>
-          <span className="hidden font-semibold text-sm sm:block">Resume Analyzer</span>
+          <span className="hidden font-semibold text-sm sm:block">Resume Generator</span>
         </Link>
 
         {/* Nav links */}

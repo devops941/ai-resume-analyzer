@@ -31,6 +31,7 @@ def _request_to_dict(payload: GenerateResumeRequest) -> dict:
         "skills": payload.skills,
         "projects": [p.model_dump() for p in payload.projects],
         "certifications": [c.model_dump() for c in payload.certifications],
+        "targetPages": getattr(payload, "targetPages", 1) or 1,
     }
     if payload.promptText:
         d["promptText"] = payload.promptText

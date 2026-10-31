@@ -75,7 +75,7 @@ export default function AnalysisDetailPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">ATS Report</h1>
+            <h1 className="text-2xl font-bold">Analysis Report</h1>
             <p className="text-sm text-[hsl(var(--muted-foreground))]">
               {analysis.resume?.fileName || "Resume"} · {formatDate(analysis.createdAt)}
             </p>
@@ -91,7 +91,9 @@ export default function AnalysisDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6">
+        {/* ATS Score Gauge card commented out */}
+        {/*
         <Card className="lg:col-span-1">
           <CardContent className="flex flex-col items-center justify-center gap-4 p-8">
             <ScoreGauge score={analysis.atsScore} />
@@ -115,8 +117,12 @@ export default function AnalysisDetailPage() {
           </CardContent>
         </Card>
 
-        <div className="space-y-6 lg:col-span-2">
-          <AtsChecks checks={analysis.atsChecks} />
+
+        */}
+
+        <div className="space-y-6">
+          {/* ATS Compatibility Checks card commented out */}
+          {/* <AtsChecks checks={analysis.atsChecks} /> */}
           <KeywordGaps gaps={analysis.keywordGaps} />
         </div>
       </div>
@@ -134,6 +140,7 @@ export default function AnalysisDetailPage() {
             ))}
           </CardContent>
         </Card>
+
       )}
 
       <AiReportCard report={analysis.aiReport} suggestions={analysis.suggestions} />
