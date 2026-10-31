@@ -32,6 +32,16 @@ function contactLine(data: Record<string, unknown>): string {
     .join("  |  ") as string;
 }
 
+function getEduDisplayTitle(degree?: string, field?: string): string {
+  const deg = (degree || "").trim();
+  const fld = (field || "").trim();
+  if (!deg) return fld;
+  if (!fld) return deg;
+  if (deg.toLowerCase().includes(fld.toLowerCase())) return deg;
+  if (fld.toLowerCase().includes(deg.toLowerCase())) return fld;
+  return `${deg} in ${fld}`;
+}
+
 function parseSkills(raw: unknown): Record<string, string[]> | null {
   if (!raw) return null;
   if (!Array.isArray(raw) && typeof raw === "object") return raw as Record<string, string[]>;
@@ -178,7 +188,7 @@ export function ModernTemplate({ data }: { data: Record<string, unknown> }) {
           {education.map((edu: any, i: number) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
               <div>
-                <strong style={{ fontSize: 12, color: "#0f172a" }}>{edu.degree} in {edu.field}</strong>
+                <strong style={{ fontSize: 12, color: "#0f172a" }}>{getEduDisplayTitle(edu.degree, edu.field)}</strong>
                 <div style={{ fontSize: 11, color: "#2563eb" }}>{edu.institution}{edu.gpa ? `  |  GPA: ${edu.gpa}` : ""}</div>
               </div>
               <span style={{ fontSize: 11, color: "#64748b" }}>{edu.startYear} – {edu.endYear}</span>
@@ -277,7 +287,7 @@ export function ClassicTemplate({ data }: { data: Record<string, unknown> }) {
           {education.map((edu: any, i: number) => (
             <div key={i} style={{ marginBottom: 6, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <strong style={{ fontSize: 12, color: "#111" }}>{edu.degree} in {edu.field}</strong>
+                <strong style={{ fontSize: 12, color: "#111" }}>{getEduDisplayTitle(edu.degree, edu.field)}</strong>
                 <div style={{ fontSize: 11, fontStyle: "italic", color: "#444" }}>
                   {edu.institution}{edu.gpa ? ` — GPA: ${edu.gpa}` : ""}
                 </div>
@@ -377,7 +387,7 @@ export function MinimalTemplate({ data }: { data: Record<string, unknown> }) {
           {education.map((edu: any, i: number) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
               <div>
-                <strong style={{ fontSize: 11.5, fontWeight: 500, color: "#222" }}>{edu.degree} in {edu.field}</strong>
+                <strong style={{ fontSize: 11.5, fontWeight: 500, color: "#222" }}>{getEduDisplayTitle(edu.degree, edu.field)}</strong>
                 <div style={{ fontSize: 10.5, color: "#999", marginTop: 1 }}>{edu.institution}{edu.gpa ? `  ·  GPA ${edu.gpa}` : ""}</div>
               </div>
               <span style={{ fontSize: 10.5, color: "#ccc" }}>{edu.startYear}–{edu.endYear}</span>
@@ -484,8 +494,7 @@ export function ExecutiveTemplate({ data }: { data: Record<string, unknown> }) {
             <div style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, color: "#64748b", marginBottom: 8 }}>Education</div>
             {education.map((edu: any, i: number) => (
               <div key={i} style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 11.5, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>{edu.degree}</div>
-                <div style={{ fontSize: 10.5, color: "#94a3b8" }}>{edu.field}</div>
+                <div style={{ fontSize: 11.5, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>{getEduDisplayTitle(edu.degree, edu.field)}</div>
                 <div style={{ fontSize: 10.5, color: "#94a3b8" }}>{edu.institution}</div>
                 <div style={{ fontSize: 10, color: "#64748b", marginTop: 1 }}>{edu.startYear} – {edu.endYear}{edu.gpa ? ` · GPA ${edu.gpa}` : ""}</div>
               </div>
@@ -530,7 +539,7 @@ export function ExecutiveTemplate({ data }: { data: Record<string, unknown> }) {
                 </div>
                 {Array.isArray(exp.bullets) && exp.bullets.map((b: string, bi: number) => (
                   <div key={bi} style={{ display: "flex", gap: 7, marginTop: 3 }}>
-                    <span style={{ color: "#0f172a", fontSize: 12, flexShrink: 0, lineHeight: "16px" }}>▪</span>
+                    <span style={{ color: "#0f172a", fontSize: 12, flexShrink: 0, lineHeight: "16px" }}>•</span>
                     <span style={{ fontSize: 11, color: "#334155", lineHeight: 1.5 }}>{b}</span>
                   </div>
                 ))}

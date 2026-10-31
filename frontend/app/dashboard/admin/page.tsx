@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Activity, Download, FileText, Users, BarChart3 } from "lucide-react";
+import { Activity, Download, FileText, Users } from "lucide-react";
 
 import { api, ApiError, type AdminStats, type AdminUserRow } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -60,7 +60,7 @@ export default function AdminPage() {
     { label: "Total users", value: stats?.totalUsers || 0, icon: Users },
     { label: "Total resumes", value: stats?.totalResumes || 0, icon: FileText },
     { label: "Total analyses", value: stats?.totalAnalyses || 0, icon: Activity },
-    { label: "Average ATS score", value: stats?.averageAtsScore || 0, icon: BarChart3 },
+
   ];
 
   const maxKeyword = Math.max(1, ...(stats?.commonMissingKeywords || []).map((k) => k.count));
@@ -71,7 +71,7 @@ export default function AdminPage() {
         <div>
           <h1 className="text-2xl font-bold">Admin dashboard</h1>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            Platform usage and ATS insights across all users.
+            Platform usage and resume generation metrics.
           </p>
         </div>
         <Button variant="outline" onClick={downloadReport}>
@@ -79,7 +79,7 @@ export default function AdminPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         {cards.map(({ label, value, icon: Icon }) => (
           <Card key={label}>
             <CardContent className="flex items-center gap-4 p-6">

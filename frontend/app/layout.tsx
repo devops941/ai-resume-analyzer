@@ -3,9 +3,9 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
-  title: "AI Resume Analyzer & ATS Checker",
+  title: "AI Resume Generator - Professional Resume Builder & Templates",
   description:
-    "Upload your resume, get an AI-powered analysis and an ATS compatibility score, and compare it against any job description.",
+    "Create professional, executive-ready resumes in minutes with AI. Custom templates, AI bullet point enhancement, and instant PDF & Word export.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

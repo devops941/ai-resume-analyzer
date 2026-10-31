@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="AI Resume Analyzer & ATS Checker API",
+    title="AI Resume Generator API",
     description=(
         "Backend for resume upload, ATS scoring, keyword matching and Groq-powered "
         "AI resume analysis. Auth is JWT-based; the Groq key never leaves this service."
@@ -46,7 +46,7 @@ app.include_router(generator.router)
 async def root():
     return {
         "status": "ok",
-        "message": "AI Resume Analyzer & ATS Checker API is running",
+        "message": "AI Resume Generator API is running",
         "docs": "/docs",
     }
 

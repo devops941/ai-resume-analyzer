@@ -54,7 +54,7 @@ export default function RegisterPage({
         <div className="mx-auto flex h-14 max-w-6xl items-center">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[hsl(var(--primary))] text-xs font-bold text-white">AI</span>
-            <span className="font-semibold text-sm">Resume Analyzer</span>
+            <span className="font-semibold text-sm">Resume Generator</span>
           </Link>
         </div>
       </header>
@@ -65,7 +65,7 @@ export default function RegisterPage({
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-bold mb-2">Create your account</h1>
             <p className="text-sm text-[hsl(var(--muted-foreground))]">
-              Free to use. Analyze your resume and track your ATS score over time.
+              Free to use. Create, customize, and export professional AI resumes.
             </p>
           </div>
 
